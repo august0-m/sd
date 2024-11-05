@@ -1,0 +1,42 @@
+.data 
+tablaCalificaciones: 
+    .half 5523 
+    .byte 3 
+    .half 8754 
+    .byte 6 #. . . .
+    .half 0 #Declaramos el final del arreglo
+.text
+main:
+    la a0,tablaCalificaciones
+    jal sumo_notas_de_id_impares
+    j fin
+    li a0,1983
+fin:
+    j fin
+no_funciona:
+    li a0,-999
+    j fin
+    
+sumo_notas_de_id_impares:
+    addi sp,sp,-16
+    sw ra,0(sp)
+    lh t0,(0)a0
+    #lb t1,1(a0)
+    lb t1,2(a0)
+    #add t0,t0,t1
+    
+    
+es_par?:
+    addi sp,sp,-4
+    sw ra,0(sp)
+    li t0,2
+    rem a0,t0,a0
+    beq a0,zero,es_par
+    li a0,1
+    fin_funcion:
+        lw ra,0(sp)
+        addi sp,sp,4
+        ret
+    es_par:
+        li a0,0
+        j fin_funcion
