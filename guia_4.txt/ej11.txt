@@ -1,0 +1,103 @@
+#Ejercicio 11
+#Calcular cuantos bytes ocupa en memoria la estructura ArregloOrdenado en su conjunto,
+#incluyendo al arreglo asociado.
+#ocupa 16 bytes
+.data
+arreglo: .half 2,54,1000,2500
+ArregloOrdenado: .word arreglo, 4
+
+arreglo2: .half 2, 54, 1000, 2400, 2420,2501, 3000, 3001, 3002
+ArregloOrdenado2: .word arreglo2, 9
+
+arreglo3: .half 2, 54, 1000, 2500, 2502, 3000
+ArregloOrdenado3: .word arreglo3, 6
+
+.text
+#prueba 1
+la a0, ArregloOrdenado
+li a1, 54
+jal busqueda_binaria
+li t0, 1
+bne t0, a0, nofunciona
+
+#prueba 2
+la a0, ArregloOrdenado2
+li a1, 3002
+jal busqueda_binaria
+li t0, 8
+bne t0, a0, nofunciona
+
+#prueba 3
+la a0, ArregloOrdenado3
+li a1, 2501
+jal busqueda_binaria
+li t0, -1
+bne t0, a0, nofunciona
+
+funciona: li s1, 1
+j fin
+nofunciona: li s1, 0
+j fin
+
+fin: j fin
+
+busqueda_binaria: #implementación iterativa, a0=la dirección de ArregloOrdenado, a1=el valor
+lw t2, 0(a0) #obtengo la dirección del primer elemento de mi arreglo
+lw t0, 4(a0) #obtengo el tamaño del arreglo, el tamaño del arreglo ya es el offset para el elemento del medio
+             #del arreglo (porque los elementos son de 16 bits), salvo el caso donde dicho tamaño es impar que lo arreglo manualmente
+andi t3, t0, 1 #si en t3 queda un 1 implica que el tamaño es impar
+li t4, 1
+bne t3, t4, else'
+addi t0, t0, -1 #así me queda par y pasa a ser válido para usar como offset
+else':
+add a0, t2, t0 #la dirección del elemento del medio de mi subsección
+for:
+lh t1, 0(a0) #cargo el valor de dicho elemento en t1
+li t5, 1
+bne t5, t0, else''
+bne t1, a1, no_esta #en la lista
+else'':
+bgt t1, a1, subseccion_izquierda 
+blt t1, a1, subseccion_derecha
+j return
+
+no_esta:
+li a0, -1
+ret
+subseccion_izquierda: 
+#idea: agarra el tamaño de mi subsección en bytes, la divide por 2 y si es impar resta 1 para hacerla par y que no termine en el medio de un número
+li t5, 2
+bne t5, t0, continuar'
+sub a0, a0, t0 #porque si no en el caso t0=2 se rompe
+addi t0, t0, -1
+j for
+continuar':
+srli t0, t0, 1 #divido por 2 el tamaño
+andi t4, t0, 1 #si en t4 quedo un 1 me esta diciendo que es impar
+li t5, 1
+bne t4, t5, else
+addi t0, t0, -1
+else:
+sub a0, a0, t0
+j for
+
+subseccion_derecha: 
+li t5, 2
+bne t5, t0, continuar
+add a0, a0, t0 #esto es para solucionar lo que dije abajo
+addi t0, t0, -1
+j for
+continuar:
+srli t0, t0, 1 #divido por 2 el tamaño, CUANDO T0 ES 2 TENGO UN PROBLEMA: ESTO LO CONVIERTE EN 1 Y LUEGO LO DE ABAJO LO CONVIERTE EN 0, Y ENTONCES PARA EL CASO T0=2 SE ROMPE (por eso la sección de arriba)
+andi t4, t0, 1 #si en t4 quedo un 1 me esta diciendo que es impar
+li t5, 1
+bne t4, t5, else2
+addi t0, t0, -1
+else2:
+add a0, a0, t0
+j for
+
+return:
+sub a0, a0, t2
+srli a0, a0, 1 #divido por 2 para obtener el índice
+ret

@@ -1,0 +1,17 @@
+#Ejercicio 11
+# Se tiene en memoria una estructura ArregloOrdenado, compuesta por un puntero a un arreglo de numeros sin singo de 16 bits ordenado
+# y la dimension de este arreglo representada en un numero de 32 bits en complemento a 2, donde el puntero sera nulo si la dimension es 0. 
+#   ArregloOrdenado    Direccion     0x10000018   0x1000001A   0x1000001C   0x1000001E 
+# 0x10000018   4         Valor            2           54         1000         2500 
+# Se pide:
+# Calcular cuantos bytes ocupa en memoria la estructura ArregloOrdenado en su conjunto, incluyendo al arreglo asociado.
+# Escribir una funcion que dado un puntero a un ArregloOrdenado y un valor, realice una busqueda binaria para encontrar y devolver el index del valor dentro del arreglo,
+# o -1 si este no se encuentra. Implementar la busqueda de forma recursiva e iterativa.
+.data
+largo1: .word  4
+arreglo1: .half 2,54,1000,2500
+.text
+main:
+    lw a0,largo1
+    lw a1,arreglo1
+    la a1,arreglo1

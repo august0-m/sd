@@ -1,0 +1,46 @@
+#Ejercicio 10 
+#Se tiene en memoria una lista enlazada de nodos, donde cada nodo contiene un valor de 32 bits en complemento a 2 y un puntero al siguiente elemento de la lista,
+#el ultimo nodo contendra un puntero nulo (valdra 0) hacia el siguiente elemento. 
+#Por ultimo, se tendra una raiz, que apuntara al primer nodo de la lista, si su puntero fuera nulo, la lista estaria vacia. 
+#Raiz ? 4 ?-23 ? 6 ? 2
+# Se pide:
+# Calcular cuantos bytes ocupa en memoria un nodo ¿Cuanto ocupara una lista enlazada de n elementos? 
+#RTA: cada nodo ocupa 4 bytes (el numero que contiene) + 4 bytes (la direccion de memoria al siguiente) = 8 bytes
+# una lista enlazada de n nodos tendra el siguiente tamaño: ( N(cant.nodos) * 8 ) + 4 (cant. bytes de la raiz) 
+# Escribir una funcion que dado un puntero a la raiz de una lista enlazada, devuelva la suma de los valores de cada nodo.
+# Ayuda: Para crear una lista enlazada en ripes defina los nodos en el orden inverso de la lista, para asi poder hacer referncia a la etiqueta. 
+# Ejemplo: 
+.data 
+ nodo_4: .word -1, 0x0 
+ nodo_3: .word 6, nodo_4 
+ nodo_2: .word 3, nodo_3 
+ nodo_1: .word -2, nodo_2 
+ raiz: .word nodo_1
+.text
+main:
+    la a0,raiz
+    jal suma_elementos
+    li a1,6
+    bne a0,a1,no_funciona
+    li a0,1983
+fin:
+    j fin
+no_funciona:
+    li a0,-999
+    j fin
+suma_elementos:
+    addi sp,sp,-16
+    sw ra,0(sp)
+    lw a0,(0)a0
+    beq a0,zero,puntero_nulo
+    lw t0,(0)a0                # si el puntero no es nulo, entonces voy a ese puntero y cargo el numero
+    add a1,a1,t0
+    addi a0,a0,4
+    j suma_elementos
+    puntero_nulo:
+        mv a0,a1
+        lw ra,(0)sp
+        addi sp,sp,16
+        ret      
+     
+     

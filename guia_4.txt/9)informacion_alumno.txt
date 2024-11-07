@@ -1,0 +1,61 @@
+.data 
+tablaCalificaciones: 
+    .half 5523 
+    .byte 3 
+    .half 8754 
+    .byte 6 #. . . .
+    .half 0 #Declaramos el final del arreglo
+.text
+main:
+    la a0,tablaCalificaciones
+    jal sumo_notas_de_id_impares
+    li a1,3
+    bne a0,a1,no_funciona
+    
+    li a0,1983
+fin:
+    j fin
+no_funciona:
+    li a0,-999
+    j fin
+    
+sumo_notas_de_id_impares:
+    addi sp,sp,-16
+    sw ra,0(sp)
+    mv t0,a0              # a0 es direc de memoria, voy a usar t0 para guardarlo
+    lh a0,(0)t0           # lh en 0 de a0 me da el id
+    beq a0,zero,id_es_cero
+    lb a1,(2)t0           # lb en 2 de a0 me da la nota 
+    li t2,2               # voy a usar a t2 para ver si a0 es par, usando modulo 
+    rem a0,a0,t2
+    beq a0,zero,epilogo
+    add a2,a2,a1        # si es impar sumo la nota
+    epilogo:
+        addi t0,t0,3
+        mv a0,t0
+        j sumo_notas_de_id_impares
+    id_es_cero:
+        mv a0,a2
+        lw ra,0(sp)
+        addi sp,sp,16
+        ret
+    
+#es_par?:
+#    addi sp,sp,-4
+#    sw ra,0(sp)
+#    li t0,2
+#    rem a0,t0,a0
+#    beq a0,zero,es_par
+#    li a0,1
+#    fin_funcion:
+#        lw ra,0(sp)
+#        addi sp,sp,4
+#        ret
+#    es_par:
+#        li a0,0
+#        j fin_funcion
+     
+     
+     
+     
+     

@@ -1,0 +1,71 @@
+#Ejercicio8 
+#Programe en lenguaje ensamblador de RISC-V las siguientes funciones recursivas y al menos 2 casos de test que compruebe el funcionamiento de cada una de ellas.
+#Se debe usar la convencion de llamada de RISC-V. 
+# (b)Profundidad de Collatz: 
+#f(n)=| n/2   si n es par 
+#     |3n + 1 si n es impar 
+#Segun la conjetura de Collatz,si se aplica la funcion a un numero natural cualquiera,con suficientes repeticiones se llegara al numero1. 
+#Por ejemplo 6 ? 3 ? 10 ? 5 ? 16 ? 8 ? 4 ? 2 ? 1. 
+#Implementar la funcion EsPar,que dado un numero devuelve 0 si es impar y 1 si es par. 
+#Utilizar EsPar para construir una funcion que dado un numero,devuelve la cantidad de repeticiones necesarias de f para llegar a 1. 
+# Por ejemplo: Pc(1) = 0 y
+#              Pc(6) = 8
+main:
+    li a0,1
+    jal ra, profundidad_de_collatz
+    li a1,0
+    bne a0,a1,no_funciona
+    
+    li a0,6
+    jal ra, profundidad_de_collatz
+    li a1,8
+    bne a0,a1,no_funciona
+    li a0,1983
+fin:
+    j fin
+no_funciona:
+    li a0,-98312
+    j fin
+    
+    
+profundidad_de_collatz:
+    addi sp,sp,-16
+    sw ra,0(sp)
+    
+    li t1,1                #chequeo si es 1                         #caso 1
+    beq a0,t1,epilogo
+    
+    mv t0,a0                # muevo a0 a t2 para chequear si es par
+    li t2,2
+    rem t0,t0,t2
+    beq t0,zero,caso_par      # si tiene resto cero con 2, es par         #caso 2
+    
+    li t3,3                 # si no es par, no salte, t3 para multiplicar n por 3            #caso 3
+    mul a0,a0,t3            # 3n
+    addi a0,a0,1            # +1
+    addi t4,t4,1            # t4 lo voy a usar como contador
+    j profundidad_de_collatz
+    caso_par:
+        div a0,a0,t2
+        addi t4,t4,1
+        j profundidad_de_collatz  
+    epilogo:
+        mv a0,t4
+        lw ra,0(sp)
+        addi sp,sp,16
+        ret
+es_par?:                                        # no la utilizo pero la implementé
+    addi sp,sp,-4
+    sw ra,0(sp)
+    li t0,2
+    rem a0,t0,a0
+    beq a0,zero,es_par
+    li a0,1
+    fin_funcion:
+        lw ra,0(sp)
+        addi sp,sp,4
+        ret
+    es_par:
+        li a0,0
+        j fin_funcion
+         

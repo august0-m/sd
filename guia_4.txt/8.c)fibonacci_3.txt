@@ -1,0 +1,106 @@
+#Ejercicio8 
+#Programe en lenguaje ensamblador de RISC-V las siguientes funciones recursivas y al menos 2 casos de test que compruebe el funcionamiento de cada una de ellas.
+#Se debe usar la convencion de llamada de RISC-V. 
+#Fibonacci3: 
+#F3(x)=| 0                            si x = 0 
+#      | 1                            si x = 1 
+#      | 2                            si x = 2 
+#      | F3(x-1) + F3(x-2) + F3(x-3)    sino
+main:
+    li a0,0
+    jal ra, fibonacci_3
+    li a1,0                    # f(0) = 0
+    bne a0,a1,no_funciona
+    
+    li a0,1
+    jal ra, fibonacci_3
+    li a1,1                    # f(1) = 1
+    bne a0,a1,no_funciona
+    
+    li a0,2
+    jal ra, fibonacci_3
+    li a1,2                    # f(2) = 2
+    bne a0,a1,no_funciona
+    
+    li a0,3
+    jal ra, fibonacci_3
+    li a1,3                    # f(3) = 3
+    bne a0,a1,no_funciona
+    
+    li a0,4
+    jal ra, fibonacci_3
+    li a1,6                      # f(4)=6
+    bne a0,a1,no_funciona
+    
+    li a0,5
+    jal ra, fibonacci_3
+    li a1,11                     # f(5) = 11
+    bne a0,a1,no_funciona
+    
+    li a0,6
+    jal ra, fibonacci_3
+    li a1,20                     # f(6) = 20
+    bne a0,a1,no_funciona        
+    
+    li a0,7
+    jal ra, fibonacci_3
+    li a1,37                     # f(7) = 37
+    bne a0,a1,no_funciona
+    
+    li a0,8
+    jal ra, fibonacci_3
+    li a1,68                     # f(8) = 68
+    bne a0,a1,no_funciona
+    
+    li a0,9
+    jal ra, fibonacci_3
+    li a0,125                    # f(9)= 125
+    bne a4,a1,no_funciona
+    
+    li a0,1983
+fin:
+    j fin
+no_funciona:
+    li a0,-98312
+    j fin
+    
+    
+fibonacci_3:
+    addi sp,sp,-16
+    sw ra,(0) sp
+    sw a0,(4) sp
+    beq a0,zero,epilogo
+    
+    li t1,1
+    beq a0,t1,epilogo
+    
+    li t2,2
+    beq a0,t2,epilogo
+    
+    addi a0,a0,-1    
+    jal fibonacci_3    # fib x-1
+    #mv t1,a0
+    sw a0,8(sp)        # guardo respuesta de fib x-1 en a0,8(sp)
+    lw a0,(4)sp
+    
+    addi a0,a0,-2      # fib x-2
+    jal fibonacci_3
+    #mv t2,a0
+    sw a0,(12)sp      # guardo respuesta de fib x-2 en a0,12(sp)
+    lw a0,(4)sp
+    
+    addi a0,a0,-3
+    jal fibonacci_3    # fib x-3    
+                       # no me hace falta guardar el dato porque lo voy a utilizar ahora 
+    
+    lw t0,(8)sp        # t0 = fib(x-1)
+    lw t1,(12)sp       # t1 = fib(x-2) 
+ 
+    add t2,t1,t0       # t2 = fib(x-1) + fib(x-2)
+    add a0,a0,t2       # a0 =  fib(x-3) + t2
+    
+    epilogo:
+        lw ra,0(sp)
+        addi sp,sp,16
+        ret
+
